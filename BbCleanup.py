@@ -53,7 +53,7 @@ for f in txtfiles:
 onlyfiles = [ f for f in listdir(dir) if isfile(join(curdir,f)) ]
 
 # Find all the Bb assignment files, which are formatted like:
-#     assignmentname_username_attempt_date_studentfilename.ext
+#     assignmentname_username_attempt_datetime_studentfilename.ext
 # Rename the file to username.ext
 for f in onlyfiles:
     if '_attempt_' in f:
