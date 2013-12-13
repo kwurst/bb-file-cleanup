@@ -20,21 +20,24 @@
 # by deleting all .txt files with no student text data or comments
 # and renaming all the remaining files to username.ext
 
-from os import chdir, listdir, curdir
+# Call as:
+# python BbCleanup.py directory
+
+import sys
+from os import chdir, listdir, curdir, remove, rename
 from os.path import isfile, join
 
-# Get command line arguments
-args = str(sys.argv)
-dir = args[1]
+# Get directory from command line arguments
+dir = (sys.argv)[1]
 
-# Change to working directory
+# Change directory
 chdir(dir)
 
 # Get a list of all files (not directories)
-onlyfiles = [ f for f in listdir() if isfile(join(curdir,f)) ]
+onlyfiles = [ f for f in listdir(dir) if isfile(join(curdir,f)) ]
 
 # Get the list of all .txt files
-txtfiles = [ f for f in onlyfiles if '.txt' in f) ]
+txtfiles = [ f for f in onlyfiles if '.txt' in f ]
 
 # Get rid of Bb .txt files that have no student text data or comments
 for f in txtfiles:
@@ -43,18 +46,21 @@ for f in txtfiles:
     file.close()
     if 'There are no student comments for this assignment' in contents and \
        'There is no student submission text data for this assignment.' in contents:
-        os.remove(f)
+        remove(f)
+        print('Deleted', f)
 
 # Get the list of remaining files
-onlyfiles = [ f for f in listdir() if isfile(join(curdir,f)) ]
+onlyfiles = [ f for f in listdir(dir) if isfile(join(curdir,f)) ]
 
 # Find all the Bb assignment files, which are formatted like:
 #     assignmentname_username_attempt_date_studentfilename.ext
 # Rename the file to username.ext
 for f in onlyfiles:
     if '_attempt_' in f:
-        first = f.find('_')
-        second_= f.find('_',first+1)
-        extension = f[f.find('.'):]
-        os.rename(f, f[first+1:second] + extension)
+        first = f.find('_') # location of first underscore
+        second = f.find('_',first+1) # location of second underscore
+        extension = f[f.rfind('.'):] # get file extension
+        newf = f[first+1:second] + extension
+        rename(f, newf)
+        print('Renamed', f, 'to', newf)
         
