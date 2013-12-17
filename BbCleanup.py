@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright (C) 2013 Karl R. Wurst
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -14,27 +15,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 
-
-
+###################################################################
 # Cleans up assignment files downloaded from Blackboard's gradebook
 # by deleting all .txt files with no student text data or comments
 # and renaming all the remaining files to username.ext
 
 # Call as:
-# python BbCleanup.py directory
+# python bbcleanup.py directory
 
 import sys
-from os import chdir, listdir, curdir, remove, rename
-from os.path import isfile, join
+import os
+import os.path
 
 # Get directory from command line arguments
 dir = (sys.argv)[1]
 
 # Change directory
-chdir(dir)
+os.chdir(dir)
 
-# Get a list of all files (not directories)
-onlyfiles = [ f for f in listdir(dir) if isfile(join(curdir,f)) ]
+# Get a list of all files (not directories) (from http://stackoverflow.com/a/3207973)
+onlyfiles = [ f for f in os.listdir(dir) if os.path.isfile(os.path.join(os.curdir,f)) ]
 
 # Get the list of all .txt files
 txtfiles = [ f for f in onlyfiles if '.txt' in f ]
@@ -46,21 +46,21 @@ for f in txtfiles:
     file.close()
     if 'There are no student comments for this assignment' in contents and \
        'There is no student submission text data for this assignment.' in contents:
-        remove(f)
+        os.remove(f)
         print('Deleted', f)
 
 # Get the list of remaining files
-onlyfiles = [ f for f in listdir(dir) if isfile(join(curdir,f)) ]
+onlyfiles = [ f for f in os.listdir(dir) if os.path.isfile(os.path.join(os.curdir,f)) ]
 
 # Find all the Bb assignment files, which are formatted like:
 #     assignmentname_username_attempt_datetime_studentfilename.ext
 # Rename the file to username.ext
 for f in onlyfiles:
     if '_attempt_' in f:
-        first = f.find('_') # location of first underscore
+        first = f.find('_')          # location of first underscore
         second = f.find('_',first+1) # location of second underscore
         extension = f[f.rfind('.'):] # get file extension
         newf = f[first+1:second] + extension
-        rename(f, newf)
+        os.rename(f, newf)
         print('Renamed', f, 'to', newf)
         
