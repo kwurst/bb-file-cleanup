@@ -11,7 +11,7 @@ When you download assignment files from the Blackboard gradebook, two undesirabl
 This script will:
 
 1. Delete all comment files that contain no text data and not comment.
-2. Rename all other files to username.ext
+2. Rename all other files to username-filename.ext
 
 Call the script as:
 
