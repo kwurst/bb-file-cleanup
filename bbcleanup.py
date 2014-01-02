@@ -67,7 +67,7 @@ nontxtfiles = [ f for f in os.listdir(dir) if os.path.isfile(os.path.join(os.cur
 # Find all the Bb assignment files, which are formatted like:
 #     assignmentname_username_attempt_datetime_studentfilename.ext
 # Rename the file to username-studentfilename.ext
-for f in onlyfiles:
+for f in nontxtfiles:
     if '_attempt_' in f:
         first = f.find('_')          # location of first underscore
         second = f.find('_',first+1) # location of second underscore
