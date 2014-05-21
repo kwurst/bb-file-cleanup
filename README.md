@@ -10,10 +10,10 @@ When you download assignment files from the Blackboard gradebook, two undesirabl
 
 This script will:
 
-1. Delete all comment files that contain no text data and not comment.
+1. Delete all comment files that contain no text data and no comment.
 2. Rename all other files to username-filename.ext
 
 Call the script as:
 
-python BbCleanup.py directory-to-cleanup
+> python BbCleanup.py *directory-to-cleanup*
 
