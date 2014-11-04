@@ -78,5 +78,8 @@ def bbcleanup():
             os.rename(f, newf)
             print('Renamed', f, 'to', newf)
         
+def getTextFileListFromFileList(fileList):
+    return [f for f in fileList if '.txt' in f[-4:]]
+            
 if __name__ == '__main__':
     bbcleanup()
