@@ -28,58 +28,59 @@ import os
 import os.path
 
 def bbcleanup():
-    # Get directory from command line arguments
-    dir = (sys.argv)[1]
+    os.chdir(sys.argv[1])
     
-    # Change directory
-    os.chdir(dir)
-    
-    # Get a list of all files (not directories) (from http://stackoverflow.com/a/3207973)
-    onlyfiles = [ f for f in os.listdir(dir) if os.path.isfile(os.path.join(os.curdir, f)) ]
-    
-    # Get rid of spaces and parentheses in filenames
-    for f in onlyfiles:
-        newf = f.replace(' ', '').replace('(', '').replace(')', '')
-        os.rename(f, newf)
-    
-    # Get the list of all .txt files
-    txtfiles = [ f for f in os.listdir(dir) if os.path.isfile(os.path.join(os.curdir, f)) and '.txt' in f]
-    
-    # Get rid of Bb .txt files that have no student text data or comments
-    #   and rename remaining files to username.txt
-    for f in txtfiles:
-        if '_attempt' in f:
-            file = open(f)
-            contents = file.read()
-            file.close()
-            if 'There are no student comments for this assignment' in contents and \
-               'There is no student submission text data for this assignment.' in contents:
-                os.remove(f)
-                print('Deleted', f)
-            else:
+    deleteContentFreeTextFiles(filterForFilesOnly(os.listdir()))    
+    unmungeAndRenameBlackboardFiles(filterForFilesOnly(os.listdir()))
+
+def unmungeAndRenameBlackboardFiles(fileNameList):
+    unmungedFileNameList = unmungeBlackboardFileNames(fileNameList)
+    renameList = zip(fileNameList, unmungedFileNameList)
+    for pair in renameList:
+        os.rename(pair[0], pair[1])
+     
+def deleteContentFreeTextFiles(filenameList):   
+    deleteList = filterForContentFreeTextFiles(filenameList)
+    for f in deleteList:
+        os.remove(f)
+
+def unmungeBlackboardFileNames(filenameList):
+    returnList = []
+    for f in filenameList:
+        if '_attempt_' in f:
+            f = removeSpacesAndParentheses(f)   
+            if isTextFile(f):
                 first = f.find('_')  # location of first underscore
                 second = f.find('_', first + 1)  # location of second underscore
                 newf = f[first + 1:second] + '.txt'
-                os.rename(f, newf)
-                print('Renamed', f, 'to', newf)
-                
-    # Get the list of all non-.txt files
-    nontxtfiles = [ f for f in os.listdir(dir) if os.path.isfile(os.path.join(os.curdir, f)) and not '.txt' in f]
+                returnList.append(newf)
+            else:
+                first = f.find('_')  # location of first underscore
+                second = f.find('_', first + 1)  # location of second underscore
+                last = f.rfind('_')  # location of last underscore
+                newf = f[first + 1:second] + '-' + f[last + 1:]
+                returnList.append(newf)
+    return returnList
+ 
+def filterForContentFreeTextFiles(filenameList):
+    returnList = []
+    for f in filenameList:
+        if '_attempt' in f and isTextFile(f):
+            with open(f) as file:
+                contents = file.read()
+            if 'There are no student comments for this assignment' in contents and \
+               'There is no student submission text data for this assignment.' in contents:
+                returnList.append(f)
+    return returnList
     
-    # Find all the Bb assignment files, which are formatted like:
-    #     assignmentname_username_attempt_datetime_studentfilename.ext
-    # Rename the file to username-studentfilename.ext
-    for f in nontxtfiles:
-        if '_attempt_' in f:
-            first = f.find('_')  # location of first underscore
-            second = f.find('_', first + 1)  # location of second underscore
-            last = f.rfind('_')  # location of last underscore
-            newf = f[first + 1:second] + '-' + f[last + 1:]
-            os.rename(f, newf)
-            print('Renamed', f, 'to', newf)
-        
-def getTextFileListFromFileList(fileList):
-    return [f for f in fileList if '.txt' in f[-4:]]
+def isTextFile(filename):
+    return '.txt' == filename[-4:]
+
+def filterForFilesOnly(directoryContentsList):
+    return [ f for f in directoryContentsList if os.path.isfile(f) ]
+
+def removeSpacesAndParentheses(string):
+    return string.replace(' ', '').replace('(', '').replace(')', '')
             
 if __name__ == '__main__':
     bbcleanup()
