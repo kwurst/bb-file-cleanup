@@ -15,23 +15,28 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 
-###################################################################
-# Cleans up assignment files downloaded from Blackboard's gradebook
-# by deleting all .txt files with no student text data or comments
-# and renaming all the remaining files to username-studentfilename.ext
+#######################################################################
+# Cleans up assignment files downloaded from Blackboard's gradebook by:
+#  - deleting all .txt files with no student text data or comments
+#  - renaming remaining .txt files to username.txt
+# -  renaming all other files to username-userfilename.ext
 
 # Call as:
-# python bbcleanup.py directory
+# python bbcleanup.py working-directory
 
 import sys
 import os
 import os.path
 
 def bbcleanup():
-    os.chdir(sys.argv[1])
-    
+    changeToWorkingDirectory()
     deleteContentFreeTextFiles(filterForFilesOnly(os.listdir()))    
     unmungeAndRenameBlackboardFiles(filterForFilesOnly(os.listdir()))
+
+def deleteContentFreeTextFiles(filenameList):   
+    deleteList = filterForContentFreeTextFiles(filenameList)
+    for filename in deleteList:
+        os.remove(filename)
 
 def unmungeAndRenameBlackboardFiles(fileNameList):
     unmungedFileNameList = unmungeBlackboardFileNames(fileNameList)
@@ -39,48 +44,57 @@ def unmungeAndRenameBlackboardFiles(fileNameList):
     for pair in renameList:
         os.rename(pair[0], pair[1])
      
-def deleteContentFreeTextFiles(filenameList):   
-    deleteList = filterForContentFreeTextFiles(filenameList)
-    for f in deleteList:
-        os.remove(f)
+def filterForContentFreeTextFiles(filenameList):
+    return [f for f in filenameList if isContentFreeTextFile(f)]
 
 def unmungeBlackboardFileNames(filenameList):
     returnList = []
-    for f in filenameList:
-        if '_attempt_' in f:
-            f = removeSpacesAndParentheses(f)   
-            if isTextFile(f):
-                first = f.find('_')  # location of first underscore
-                second = f.find('_', first + 1)  # location of second underscore
-                newf = f[first + 1:second] + '.txt'
-                returnList.append(newf)
+    for filename in filenameList:
+        if isAttemptFile(filename):
+            filename = removeSpacesAndParentheses(filename)
+            username = getUsername(filename)
+            positionStartAttempt = filename.find('_')  # location of second underscore
+            if isTextFile(filename):
+                returnList.append(username + '.txt')
             else:
-                first = f.find('_')  # location of first underscore
-                second = f.find('_', first + 1)  # location of second underscore
-                last = f.rfind('_')  # location of last underscore
-                newf = f[first + 1:second] + '-' + f[last + 1:]
-                returnList.append(newf)
+                userFilename = getUserFilename(filename)
+                returnList.append(username + '-' + userFilename)
     return returnList
- 
-def filterForContentFreeTextFiles(filenameList):
-    returnList = []
-    for f in filenameList:
-        if '_attempt' in f and isTextFile(f):
-            with open(f) as file:
-                contents = file.read()
-            if 'There are no student comments for this assignment' in contents and \
-               'There is no student submission text data for this assignment.' in contents:
-                returnList.append(f)
-    return returnList
-    
+     
+def getFileContents(filename):
+    with open(filename) as file:
+        return file.read()
+
+def isAttemptFile(filename):
+    return '_attempt_' in filename
+
 def isTextFile(filename):
     return '.txt' == filename[-4:]
+
+def isContentFreeTextFile(filename):
+    if isAttemptFile(filename) and isTextFile(filename):
+        contents = getFileContents(filename)
+        if 'There are no student comments for this assignment' in contents and \
+            'There is no student submission text data for this assignment.' in contents:  
+            return filename      
 
 def filterForFilesOnly(directoryContentsList):
     return [ f for f in directoryContentsList if os.path.isfile(f) ]
 
 def removeSpacesAndParentheses(string):
     return string.replace(' ', '').replace('(', '').replace(')', '')
-            
+
+def getUsername(filename):
+    firstUnderscore = filename.find('_')
+    secondUnderscore = filename.find('_', firstUnderscore + 1)
+    return filename[firstUnderscore + 1:secondUnderscore]
+
+def getUserFilename(filename):
+    lastUnderscore = filename.rfind('_')
+    return filename[lastUnderscore + 1:]
+
+def changeToWorkingDirectory():
+    os.chdir(sys.argv[1]) 
+        
 if __name__ == '__main__':
     bbcleanup()

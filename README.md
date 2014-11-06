@@ -1,4 +1,4 @@
-Bb-file-cleanup
+bb-file-cleanup
 ===============
 
 Cleans up Blackboard assignment files downloaded from the gradebook
@@ -10,10 +10,11 @@ When you download assignment files from the Blackboard gradebook, two undesirabl
 
 This script will:
 
-1. Delete all comment files that contain no text data and no comment.
-2. Rename all other files to username-filename.ext
+1. Delete all .txt files with no student text data or comments
+2. Rename remaining .txt files to username.txt
+3. Rename all other files to username-userfilename.ext
 
 Call the script as:
 
-> python BbCleanup.py *directory-to-cleanup*
+> python bbcleanup.py *directory-to-cleanup*
 
