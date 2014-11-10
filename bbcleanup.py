@@ -56,10 +56,6 @@ def unmungeSingleBlackboardFilename(filename):
     submittedFilename = getSubmittedFilename(filename)
     return username + submittedFilename
        
-def getFileContents(filename):
-    with open(filename) as file:
-        return file.read()
-
 def isAttemptFile(filename):
     return '_attempt_' in filename
 
@@ -72,6 +68,10 @@ def isContentFreeTextFile(filename):
         if 'There are no student comments for this assignment' in contents and \
             'There is no student submission text data for this assignment.' in contents:  
             return filename      
+
+def getFileContents(filename):
+    with open(filename) as file:
+        return file.read()
 
 def filterForFilesOnly(directoryContentsList):
     return [ f for f in directoryContentsList if os.path.isfile(f) ]
