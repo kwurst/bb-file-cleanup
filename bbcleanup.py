@@ -39,7 +39,7 @@ def deleteContentFreeTextFiles(filenameList):
         os.remove(filename)
 
 def unmungeAndRenameBlackboardFiles(fileNameList):
-    unmungedFileNameList = unmungeBlackboardFileNames(fileNameList)
+    unmungedFileNameList = unmungeBlackboardFilenames(fileNameList)
     renameList = zip(fileNameList, unmungedFileNameList)
     for pair in renameList:
         os.rename(pair[0], pair[1])
@@ -47,19 +47,15 @@ def unmungeAndRenameBlackboardFiles(fileNameList):
 def filterForContentFreeTextFiles(filenameList):
     return [f for f in filenameList if isContentFreeTextFile(f)]
 
-def unmungeBlackboardFileNames(filenameList):
-    returnList = []
-    for filename in filenameList:
-        if isAttemptFile(filename):
-            filename = removeSpacesAndParentheses(filename)
-            username = getUsername(filename)
-            if isTextFile(filename):
-                returnList.append(username + '.txt')
-            else:
-                userFilename = getUserFilename(filename)
-                returnList.append(username + '-' + userFilename)
-    return returnList
-     
+def unmungeBlackboardFilenames(filenameList):
+    return [unmungeSingleBlackboardFilename(f) for f in filenameList if isAttemptFile(f)]
+ 
+def unmungeSingleBlackboardFilename(filename):
+    filename = removeSpacesAndParentheses(filename)
+    username = getUsername(filename)
+    submittedFilename = getSubmittedFilename(filename)
+    return username + submittedFilename
+       
 def getFileContents(filename):
     with open(filename) as file:
         return file.read()
@@ -88,9 +84,12 @@ def getUsername(filename):
     secondUnderscore = filename.find('_', firstUnderscore + 1)
     return filename[firstUnderscore + 1:secondUnderscore]
 
-def getUserFilename(filename):
-    lastUnderscore = filename.rfind('_')
-    return filename[lastUnderscore + 1:]
+def getSubmittedFilename(filename):
+    if isTextFile(filename):
+        return '.txt'
+    else:
+        lastUnderscore = filename.rfind('_')
+        return '-' + filename[lastUnderscore + 1:]
 
 def changeToWorkingDirectory():
     os.chdir(sys.argv[1]) 
