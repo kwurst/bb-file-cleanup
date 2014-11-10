@@ -53,7 +53,6 @@ def unmungeBlackboardFileNames(filenameList):
         if isAttemptFile(filename):
             filename = removeSpacesAndParentheses(filename)
             username = getUsername(filename)
-            positionStartAttempt = filename.find('_')  # location of second underscore
             if isTextFile(filename):
                 returnList.append(username + '.txt')
             else:
