@@ -21,11 +21,11 @@ class BbcleanupTester(unittest.TestCase):
         self.assertFalse(isAttemptFile('a.pdf'))
         self.assertTrue(isAttemptFile('a_attempt_.txt'))
    
-    def test_filterForFilesOnly(self):
-        self.assertEqual([], filterForFilesOnly([]))
-        self.assertEqual([], filterForFilesOnly(['.git', 'src']))
-        self.assertEqual(['a.pdf', 'b.txt'], 
-                         filterForFilesOnly(['a.pdf', '.git', 'src', 'b.txt']))
+    def test_filterForAttemptFiles(self):
+        self.assertEqual([], filterForAttemptFiles([]))
+        self.assertEqual([], filterForAttemptFiles(['.git', 'src']))
+        self.assertEqual(['a_attempt_b.pdf', 'b_attempt_c.txt'], 
+                         filterForAttemptFiles(['a_attempt_b.pdf', '.git', 'src', 'b_attempt_c.txt', 'c.txt']))
         
     def test_removeSpacesAndParentheses(self):
         self.assertEqual('', removeSpacesAndParentheses(''))

@@ -30,8 +30,8 @@ import os.path
 
 def bbcleanup():
     changeToWorkingDirectory()
-    deleteContentFreeTextFiles(filterForFilesOnly(os.listdir()))    
-    unmungeAndRenameBlackboardFiles(filterForFilesOnly(os.listdir()))
+    deleteContentFreeTextFiles(filterForAttemptFiles(os.listdir()))    
+    unmungeAndRenameBlackboardFiles(filterForAttemptFiles(os.listdir()))
 
 def deleteContentFreeTextFiles(filenameList):   
     deleteList = filterForContentFreeTextFiles(filenameList)
@@ -55,26 +55,26 @@ def unmungeSingleBlackboardFilename(filename):
     username = getUsername(filename)
     submittedFilename = getSubmittedFilename(filename)
     return username + submittedFilename
-       
-def isAttemptFile(filename):
-    return '_attempt_' in filename
-
-def isTextFile(filename):
-    return '.txt' == filename[-4:]
 
 def isContentFreeTextFile(filename):
-    if isAttemptFile(filename) and isTextFile(filename):
+    if isTextFile(filename):
         contents = getFileContents(filename)
         if 'There are no student comments for this assignment' in contents and \
             'There is no student submission text data for this assignment.' in contents:  
-            return filename      
+            return filename
+              
+def isTextFile(filename):
+    return '.txt' == filename[-4:]
 
 def getFileContents(filename):
     with open(filename) as file:
         return file.read()
 
-def filterForFilesOnly(directoryContentsList):
-    return [ f for f in directoryContentsList if os.path.isfile(f) ]
+def filterForAttemptFiles(directoryContentsList):
+    return [ f for f in directoryContentsList if os.path.isfile(f) and isAttemptFile(f) ]
+
+def isAttemptFile(filename):
+    return '_attempt_' in filename
 
 def removeSpacesAndParentheses(string):
     return string.replace(' ', '').replace('(', '').replace(')', '')
