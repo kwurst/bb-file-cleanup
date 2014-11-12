@@ -45,6 +45,7 @@ class BbcleanupTester(unittest.TestCase):
     def test_getSubmittedFilename(self):
         self.assertEqual('-chapter 13.pdf', getSubmittedFilename('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38_chapter 13.pdf'))
         self.assertEqual('.txt', getSubmittedFilename('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38.txt'))
+        self.assertEqual('-chapter 13.txt', getSubmittedFilename('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38_chapter 13.txt'))
         
 def mock_isfile(path):
     directories = ['src', '.git']
