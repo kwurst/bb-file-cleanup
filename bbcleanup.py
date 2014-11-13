@@ -58,7 +58,7 @@ def unmungeSingleBlackboardFilename(filename):
     return username + submittedFilename
 
 def isContentFreeTextFile(filename):
-    if isBlackBoardGeneratedFile(filename):
+    if isBlackboardGeneratedFile(filename):
         contents = getFileContents(filename)
         if 'There are no student comments for this assignment' in contents and \
             'There is no student submission text data for this assignment.' in contents:  
