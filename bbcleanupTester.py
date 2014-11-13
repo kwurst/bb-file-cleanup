@@ -11,11 +11,6 @@ class BbcleanupTester(unittest.TestCase):
         
     def tearDown(self):
         os.path.isfile = self.system_isfile
-
-    def test_isTextFile(self):
-        self.assertFalse(isTextFile('a.pdf'))
-        self.assertTrue(isTextFile('a.txt'))
-        self.assertFalse(isTextFile('a.txt.pdf'))
         
     def test_isAttemptFile(self):
         self.assertFalse(isAttemptFile('a.pdf'))
@@ -47,6 +42,11 @@ class BbcleanupTester(unittest.TestCase):
         self.assertEqual('.txt', getSubmittedFilename('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38.txt'))
         self.assertEqual('-chapter 13.txt', getSubmittedFilename('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38_chapter 13.txt'))
         
+    def test_isBbCommentFile(self):
+        self.assertTrue(isBlackboardGeneratedFile('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38.txt'))
+        self.assertFalse(isBlackboardGeneratedFile('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38_chapter 13.pdf'))
+        self.assertFalse(isBlackboardGeneratedFile('Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38_chapter 13.txt'))
+
 def mock_isfile(path):
     directories = ['src', '.git']
     if path in directories:
