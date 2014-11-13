@@ -27,6 +27,7 @@
 import sys
 import os
 import os.path
+import re
 
 def bbcleanup():
     changeToWorkingDirectory()
@@ -57,15 +58,12 @@ def unmungeSingleBlackboardFilename(filename):
     return username + submittedFilename
 
 def isContentFreeTextFile(filename):
-    if isTextFile(filename):
+    if isBlackBoardGeneratedFile(filename):
         contents = getFileContents(filename)
         if 'There are no student comments for this assignment' in contents and \
             'There is no student submission text data for this assignment.' in contents:  
             return filename
               
-def isTextFile(filename):
-    return '.txt' == filename[-4:]
-
 def getFileContents(filename):
     with open(filename) as file:
         return file.read()
@@ -85,12 +83,16 @@ def getUsername(filename):
     return filename[firstUnderscore + 1:secondUnderscore]
 
 def getSubmittedFilename(filename):
-    if isTextFile(filename):
+    if isBlackboardGeneratedFile(filename):
         return '.txt'
     else:
         lastUnderscore = filename.rfind('_')
         return '-' + filename[lastUnderscore + 1:]
-
+    
+def isBlackboardGeneratedFile(filename):
+    pattern = re.compile('.+\d{4}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\-\d{2}.txt')
+    return pattern.match(filename)
+    
 def changeToWorkingDirectory():
     os.chdir(sys.argv[1]) 
         
