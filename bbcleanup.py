@@ -31,8 +31,8 @@ import re
 
 def bbcleanup():
     changeToWorkingDirectory()
-    deleteContentFreeTextFiles(filterForAttemptFiles(os.listdir()))    
-    renameBlackboardFiles(filterForAttemptFiles(os.listdir()))
+    deleteContentFreeTextFiles(getAttemptFiles())    
+    renameBlackboardFiles(getAttemptFiles())
 
 def deleteContentFreeTextFiles(filenameList):   
     deleteList = filterForContentFreeTextFiles(filenameList)
@@ -63,6 +63,9 @@ def getFileContents(filename):
     with open(filename) as file:
         return file.read()
 
+def getAttemptFiles():
+    return filterForAttemptFiles(os.listdir())
+    
 def filterForAttemptFiles(directoryContentsList):
     return [ f for f in directoryContentsList if os.path.isfile(f) and isAttemptFile(f) ]
 
