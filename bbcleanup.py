@@ -31,11 +31,11 @@ import re
 
 def bbcleanup():
     changeToWorkingDirectory()
-    deleteContentFreeTextFiles(getAttemptFiles())    
+    deleteContentFreeBlackboardGeneratedFiles(getAttemptFiles())    
     renameBlackboardFiles(getAttemptFiles())
 
-def deleteContentFreeTextFiles(filenameList):   
-    deleteList = filterForContentFreeTextFiles(filenameList)
+def deleteContentFreeBlackboardGeneratedFiles(filenameList):   
+    deleteList = filterForContentFreeBlackboardGeneratedFiles(filenameList)
     for filename in deleteList:
         os.remove(filename)
 
@@ -43,8 +43,8 @@ def renameBlackboardFiles(filenameList):
     for filename in filenameList:
         os.rename(filename, fixBlackboardFilename(filename))
      
-def filterForContentFreeTextFiles(filenameList):
-    return [f for f in filenameList if isContentFreeTextFile(f)]
+def filterForContentFreeBlackboardGeneratedFiles(filenameList):
+    return [f for f in filenameList if isContentFreeBlackboardGeneratedFile(f)]
 
 def fixBlackboardFilename(filename):
     filename = removeSpacesAndParentheses(filename)
@@ -52,7 +52,7 @@ def fixBlackboardFilename(filename):
     submittedFilename = getSubmittedFilename(filename)
     return username + submittedFilename
 
-def isContentFreeTextFile(filename):
+def isContentFreeBlackboardGeneratedFile(filename):
     if isBlackboardGeneratedFile(filename):
         contents = getFileContents(filename)
         if 'There are no student comments for this assignment' in contents and \
