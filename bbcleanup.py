@@ -24,9 +24,7 @@
 # Call as:
 # python bbcleanup.py working-directory
 
-import sys
 import os
-import os.path
 import re
 
 def bbcleanup():
