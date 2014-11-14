@@ -32,26 +32,21 @@ import re
 def bbcleanup():
     changeToWorkingDirectory()
     deleteContentFreeTextFiles(filterForAttemptFiles(os.listdir()))    
-    unmungeAndRenameBlackboardFiles(filterForAttemptFiles(os.listdir()))
+    renameBlackboardFiles(filterForAttemptFiles(os.listdir()))
 
 def deleteContentFreeTextFiles(filenameList):   
     deleteList = filterForContentFreeTextFiles(filenameList)
     for filename in deleteList:
         os.remove(filename)
 
-def unmungeAndRenameBlackboardFiles(fileNameList):
-    unmungedFileNameList = unmungeBlackboardFilenames(fileNameList)
-    renameList = zip(fileNameList, unmungedFileNameList)
-    for pair in renameList:
-        os.rename(pair[0], pair[1])
+def renameBlackboardFiles(filenameList):
+    for filename in filenameList:
+        os.rename(filename, fixBlackboardFilename(filename))
      
 def filterForContentFreeTextFiles(filenameList):
     return [f for f in filenameList if isContentFreeTextFile(f)]
 
-def unmungeBlackboardFilenames(filenameList):
-    return [unmungeSingleBlackboardFilename(f) for f in filenameList if isAttemptFile(f)]
- 
-def unmungeSingleBlackboardFilename(filename):
+def fixBlackboardFilename(filename):
     filename = removeSpacesAndParentheses(filename)
     username = getUsername(filename)
     submittedFilename = getSubmittedFilename(filename)
