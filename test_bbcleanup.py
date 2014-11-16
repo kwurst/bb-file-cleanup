@@ -1,5 +1,7 @@
 import unittest
 import os.path
+import mockfs
+from unittest.mock import patch
 
 from bbcleanup import *
 
@@ -11,6 +13,29 @@ class BbcleanupTester(unittest.TestCase):
         
     def tearDown(self):
         os.path.isfile = self.system_isfile
+
+    def test_bbcleanup(self):
+        fs = mockfs.MockFileSystem()
+        fs.setDictionary({
+            'Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38_chapter (13).pdf':'',
+            'Chapter 13 Problems_jdoe3_attempt_2014-04-30-21-02-38.txt': '''
+                There are no student comments for this assignment
+                There is no student submission text data for this assignment.
+                ''',
+        })
+
+        with patch.multiple(os,
+                listdir=fs.listdir,
+                rename=fs.rename,
+                chdir=fs.chdir,
+                remove=fs.remove):
+            with patch('os.path.isfile', fs.isfile):
+                with patch('bbcleanup.getFileContents', fs.getFileContents):
+                    with patch('sys.argv', ['', 'anything']):
+                        bbcleanup()
+
+        self.assertListEqual(['jdoe3-chapter13.pdf'], fs.listdir())
+
 
     def test_isTextFile(self):
         self.assertFalse(isTextFile('a.pdf'))
