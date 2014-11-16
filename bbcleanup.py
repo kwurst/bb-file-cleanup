@@ -24,52 +24,46 @@
 # Call as:
 # python bbcleanup.py working-directory
 
-import sys
 import os
-import os.path
+import re
 
 def bbcleanup():
     changeToWorkingDirectory()
-    deleteContentFreeTextFiles(filterForAttemptFiles(os.listdir()))    
-    unmungeAndRenameBlackboardFiles(filterForAttemptFiles(os.listdir()))
+    deleteContentFreeBlackboardGeneratedFiles(getAttemptFiles())    
+    renameBlackboardFiles(getAttemptFiles())
 
-def deleteContentFreeTextFiles(filenameList):   
-    deleteList = filterForContentFreeTextFiles(filenameList)
+def deleteContentFreeBlackboardGeneratedFiles(filenameList):   
+    deleteList = filterForContentFreeBlackboardGeneratedFiles(filenameList)
     for filename in deleteList:
         os.remove(filename)
 
-def unmungeAndRenameBlackboardFiles(fileNameList):
-    unmungedFileNameList = unmungeBlackboardFilenames(fileNameList)
-    renameList = zip(fileNameList, unmungedFileNameList)
-    for pair in renameList:
-        os.rename(pair[0], pair[1])
+def renameBlackboardFiles(filenameList):
+    for filename in filenameList:
+        os.rename(filename, fixBlackboardFilename(filename))
      
-def filterForContentFreeTextFiles(filenameList):
-    return [f for f in filenameList if isContentFreeTextFile(f)]
+def filterForContentFreeBlackboardGeneratedFiles(filenameList):
+    return [f for f in filenameList if isContentFreeBlackboardGeneratedFile(f)]
 
-def unmungeBlackboardFilenames(filenameList):
-    return [unmungeSingleBlackboardFilename(f) for f in filenameList if isAttemptFile(f)]
- 
-def unmungeSingleBlackboardFilename(filename):
+def fixBlackboardFilename(filename):
     filename = removeSpacesAndParentheses(filename)
     username = getUsername(filename)
     submittedFilename = getSubmittedFilename(filename)
     return username + submittedFilename
 
-def isContentFreeTextFile(filename):
-    if isTextFile(filename):
+def isContentFreeBlackboardGeneratedFile(filename):
+    if isBlackboardGeneratedFile(filename):
         contents = getFileContents(filename)
         if 'There are no student comments for this assignment' in contents and \
             'There is no student submission text data for this assignment.' in contents:  
             return filename
               
-def isTextFile(filename):
-    return '.txt' == filename[-4:]
-
 def getFileContents(filename):
     with open(filename) as file:
         return file.read()
 
+def getAttemptFiles():
+    return filterForAttemptFiles(os.listdir())
+    
 def filterForAttemptFiles(directoryContentsList):
     return [ f for f in directoryContentsList if os.path.isfile(f) and isAttemptFile(f) ]
 
@@ -85,12 +79,16 @@ def getUsername(filename):
     return filename[firstUnderscore + 1:secondUnderscore]
 
 def getSubmittedFilename(filename):
-    if isTextFile(filename):
+    if isBlackboardGeneratedFile(filename):
         return '.txt'
     else:
         lastUnderscore = filename.rfind('_')
         return '-' + filename[lastUnderscore + 1:]
-
+    
+def isBlackboardGeneratedFile(filename):
+    pattern = re.compile('.+\d{4}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\-\d{2}.txt')
+    return pattern.match(filename)
+    
 def changeToWorkingDirectory():
     os.chdir(sys.argv[1]) 
         
