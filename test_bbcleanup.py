@@ -36,12 +36,6 @@ class BbcleanupTester(unittest.TestCase):
 
         self.assertListEqual(['jdoe3-chapter13.pdf'], fs.listdir())
 
-
-    def test_isTextFile(self):
-        self.assertFalse(isTextFile('a.pdf'))
-        self.assertTrue(isTextFile('a.txt'))
-        self.assertFalse(isTextFile('a.txt.pdf'))
-        
     def test_isAttemptFile(self):
         self.assertFalse(isAttemptFile('a.pdf'))
         self.assertTrue(isAttemptFile('a_attempt_.txt'))
