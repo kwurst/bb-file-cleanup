@@ -37,18 +37,8 @@ def deleteContentFreeBlackboardGeneratedFiles(filenameList):
     for filename in deleteList:
         os.remove(filename)
 
-def renameBlackboardFiles(filenameList):
-    for filename in filenameList:
-        os.rename(filename, fixBlackboardFilename(filename))
-     
 def filterForContentFreeBlackboardGeneratedFiles(filenameList):
     return [f for f in filenameList if isContentFreeBlackboardGeneratedFile(f)]
-
-def fixBlackboardFilename(filename):
-    filename = removeSpacesAndParentheses(filename)
-    username = getUsername(filename)
-    submittedFilename = getSubmittedFilename(filename)
-    return username + submittedFilename
 
 def isContentFreeBlackboardGeneratedFile(filename):
     if isBlackboardGeneratedFile(filename):
@@ -60,15 +50,16 @@ def isContentFreeBlackboardGeneratedFile(filename):
 def getFileContents(filename):
     with open(filename) as file:
         return file.read()
-
-def getAttemptFiles():
-    return filterForAttemptFiles(os.listdir())
     
-def filterForAttemptFiles(directoryContentsList):
-    return [ f for f in directoryContentsList if os.path.isfile(f) and isAttemptFile(f) ]
-
-def isAttemptFile(filename):
-    return '_attempt_' in filename
+def renameBlackboardFiles(filenameList):
+    for filename in filenameList:
+        os.rename(filename, fixBlackboardFilename(filename))
+     
+def fixBlackboardFilename(filename):
+    filename = removeSpacesAndParentheses(filename)
+    username = getUsername(filename)
+    submittedFilename = getSubmittedFilename(filename)
+    return username + submittedFilename
 
 def removeSpacesAndParentheses(string):
     return string.replace(' ', '').replace('(', '').replace(')', '')
@@ -88,7 +79,16 @@ def getSubmittedFilename(filename):
 def isBlackboardGeneratedFile(filename):
     pattern = re.compile('.+\d{4}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\-\d{2}.txt')
     return pattern.match(filename)
+
+def getAttemptFiles():
+    return filterForAttemptFiles(os.listdir())
     
+def filterForAttemptFiles(directoryContentsList):
+    return [ f for f in directoryContentsList if os.path.isfile(f) and isAttemptFile(f) ]
+
+def isAttemptFile(filename):
+    return '_attempt_' in filename
+
 def changeToWorkingDirectory():
     os.chdir(sys.argv[1]) 
         
