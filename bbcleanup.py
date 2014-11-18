@@ -77,9 +77,9 @@ def getSubmittedFilename(filename):
         lastUnderscore = filename.rfind('_')
         return '-' + filename[lastUnderscore + 1:]
     
+dateTimePattern = re.compile('.+\d{4}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\-\d{2}.txt')
 def isBlackboardGeneratedFile(filename):
-    pattern = re.compile('.+\d{4}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\-\d{2}.txt')
-    return pattern.match(filename)
+    return dateTimePattern.match(filename)
 
 def getAttemptFiles():
     return filterForAttemptFiles(os.listdir())
