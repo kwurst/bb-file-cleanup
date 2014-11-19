@@ -78,7 +78,7 @@ def getSubmittedFilename(filename):
         return '-' + filename[lastUnderscore + 1:]
     
 def isBlackboardGeneratedFile(filename):
-    dateTimePattern = re.compile('.+\d{4}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\-\d{2}.txt')
+    dateTimePattern = re.compile('[^_]+_[^_]+_attempt_\d{4}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\-\d{2}\.txt')
     return dateTimePattern.match(filename)
 
 def getAttemptFiles():
