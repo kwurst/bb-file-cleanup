@@ -82,7 +82,7 @@ def isBlackboardGeneratedFile(filename):
     return dateTimePattern.match(filename)
 
 def getAttemptFiles():
-    return filterForAttemptFiles(os.listdir())
+    return filterForAttemptFiles(os.listdir('.'))
     
 def filterForAttemptFiles(directoryContentsList):
     return [ f for f in directoryContentsList if os.path.isfile(f) and isAttemptFile(f) ]
